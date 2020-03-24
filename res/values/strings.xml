@@ -12133,12 +12133,13 @@
 
     <!-- Power menu setting privacy no secure screen lock set [CHAR_LIMIT=NONE] -->
     <string name="power_menu_privacy_not_secure">To use, first set a screen lock</string>
-
     <!-- Device controls toggle name [CHAR LIMIT=60] -->
     <string name="device_controls_setting_toggle">Show device controls</string>
 
     <!-- Cards and passes toggle name [CHAR LIMIT=60] -->
     <string name="cards_passes_setting_toggle">Show cards &amp; passes</string>
+    <!-- Device controls toggle name [CHAR LIMIT=60] -->
+    <string name="device_controls_setting_toggle">Show device controls</string>
 
     <!-- Device controls toggle subtitle [CHAR LIMIT=NONE] -->
     <string name="device_controls_setting_subtitle">To access controls for connected devices, hold the Power button</string>

@@ -17,7 +17,6 @@
 package com.android.settings.gestures;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.provider.Settings;
 
 import com.android.settings.R;
@@ -38,15 +37,15 @@ public class PowerMenuPreferenceController extends BasePreferenceController {
 
     @Override
     public CharSequence getSummary() {
-        boolean controlsVisible = isControlsAvailable()
-                && Settings.Secure.getInt(mContext.getContentResolver(),
-                        CONTROLS_ENABLED_SETTING, 1) == 1;
-        boolean cardsVisible = isCardsAvailable()
-                && Settings.Secure.getInt(mContext.getContentResolver(),
-                        CARDS_ENABLED_SETTING, 0) == 1;
-        if (controlsVisible && cardsVisible) {
+        boolean controlsEnabled = Settings.Secure.getInt(mContext.getContentResolver(),
+                CONTROLS_ENABLED_SETTING, 1) == 1;
+        boolean cardsEnabled = Settings.Secure.getInt(mContext.getContentResolver(),
+                CARDS_ENABLED_SETTING, 0) == 1;
+        boolean cardsVisible = cardsEnabled && Settings.Secure.getInt(mContext.getContentResolver(),
+                CARDS_AVAILABLE_SETTING, 0) == 1;
+        if (controlsEnabled && cardsVisible) {
             return mContext.getText(R.string.power_menu_cards_passes_device_controls);
-        } else if (controlsVisible) {
+        } else if (controlsEnabled) {
             return mContext.getText(R.string.power_menu_device_controls);
         } else if (cardsVisible) {
             return mContext.getText(R.string.power_menu_cards_passes);
@@ -57,15 +56,6 @@ public class PowerMenuPreferenceController extends BasePreferenceController {
 
     @Override
     public int getAvailabilityStatus() {
-        return isCardsAvailable() || isControlsAvailable() ? AVAILABLE : CONDITIONALLY_UNAVAILABLE;
-    }
-
-    private boolean isControlsAvailable() {
-        return mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CONTROLS);
-    }
-
-    private boolean isCardsAvailable() {
-        return Settings.Secure.getInt(mContext.getContentResolver(),
-                CARDS_AVAILABLE_SETTING, 0) == 1;
+        return AVAILABLE;
     }
 }

@@ -17,7 +17,6 @@
 package com.android.settings.gestures;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 
@@ -38,9 +37,7 @@ public class DeviceControlsPreferenceController extends GesturePreferenceControl
 
     @Override
     public int getAvailabilityStatus() {
-        boolean available = mContext.getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_CONTROLS);
-        return available ? AVAILABLE : CONDITIONALLY_UNAVAILABLE;
+        return AVAILABLE;
     }
 
     @Override
