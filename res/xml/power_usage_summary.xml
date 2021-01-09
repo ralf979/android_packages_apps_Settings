@@ -56,15 +56,26 @@
         android:title="@string/device_screen_usage"
         android:selectable="false" />
 
-    <com.android.settings.fuelgauge.PowerGaugePreference
-        android:key="designed_battery_capacity"
-        android:title="@string/designed_battery_capacity"
-        android:selectable="false" />
+    <PreferenceCategory>
+        <com.android.settings.fuelgauge.PowerGaugePreference
+            android:key="battery_temp"
+            android:title="@string/battery_temp_title"
+            android:summary="@string/battery_temp_summary"
+            android:selectable="true" />
+        <com.android.settings.fuelgauge.PowerGaugePreference
+            android:key="designed_battery_capacity"
+            android:title="@string/designed_battery_capacity"
+            android:summary="@string/designed_battery_capacity_summary"
+            android:selectable="true" 
+            settings:searchable="false"/>
 
-    <com.android.settings.fuelgauge.PowerGaugePreference
-        android:key="current_battery_capacity"
-        android:title="@string/current_battery_capacity"
-        android:selectable="false" />
+        <com.android.settings.fuelgauge.PowerGaugePreference
+            android:key="current_battery_capacity"
+            android:title="@string/current_battery_capacity"
+            android:summary="@string/current_battery_capacity_summary"
+            android:selectable="true" 
+            settings:searchable="false"/>
+    </PreferenceCategory>
 
     <com.android.settingslib.widget.FooterPreference
         android:key="power_usage_footer"

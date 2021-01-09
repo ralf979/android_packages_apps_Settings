@@ -23,5 +23,9 @@
          2 = left side
          3 = right side
     -->
-    <integer name="config_fingerprintSensorLocation">0</integer>
+    <integer name="config_fingerprintSensorLocation">3</integer>
+    <!-- Battery Health -->
+    <string name="config_batCurCap">/sys/class/power_supply/bms/charge_full_design</string>
+    <string name="config_batDesCap">/sys/class/power_supply/bms/charge_full</string>
+
 </resources>

@@ -87,13 +87,13 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
     private static final String KEY_SCREEN_USAGE = "screen_usage";
     private static final String KEY_TIME_SINCE_LAST_FULL_CHARGE = "last_full_charge";
 
+     private static final String KEY_BATTERY_TEMP = "battery_temp";
+
     private static final String KEY_CURRENT_BATTERY_CAPACITY = "current_battery_capacity";
     private static final String KEY_DESIGNED_BATTERY_CAPACITY = "designed_battery_capacity";
 
-    private static final String FILENAME_BATTERY_DESIGN_CAPACITY =
-            "/sys/class/power_supply/bms/charge_full_design";
-    private static final String FILENAME_BATTERY_CURRENT_CAPACITY =
-            "/sys/class/power_supply/bms/charge_full";
+    private String mBatDesCap;
+    private String mBatCurCap;
 
     @VisibleForTesting
     static final int BATTERY_INFO_LOADER = 1;
@@ -112,6 +112,8 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
     @VisibleForTesting
     PowerGaugePreference mLastFullChargePref;
     @VisibleForTesting
+    PowerGaugePreference mBatteryTemp;
+    @VisibleForTesting
     PowerUsageFeatureProvider mPowerFeatureProvider;
     @VisibleForTesting
     BatteryUtils mBatteryUtils;
@@ -126,6 +128,8 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
     boolean mNeedUpdateBatteryTip;
     @VisibleForTesting
     BatteryTipPreferenceController mBatteryTipPreferenceController;
+
+    private boolean batteryTemp = false;
 
     @VisibleForTesting
     final ContentObserver mSettingsObserver = new ContentObserver(new Handler()) {
@@ -245,13 +249,12 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
         mBatteryLayoutPref = (LayoutPreference) findPreference(KEY_BATTERY_HEADER);
 
         mScreenUsagePref = (PowerGaugePreference) findPreference(KEY_SCREEN_USAGE);
-        mCurrentBatteryCapacity = (PowerGaugePreference) findPreference(
-                KEY_CURRENT_BATTERY_CAPACITY);
-        mDesignedBatteryCapacity = (PowerGaugePreference) findPreference(
-                KEY_DESIGNED_BATTERY_CAPACITY);
+        mCurrentBatteryCapacity = (PowerGaugePreference) findPreference(KEY_CURRENT_BATTERY_CAPACITY);
+        mDesignedBatteryCapacity = (PowerGaugePreference) findPreference(KEY_DESIGNED_BATTERY_CAPACITY);
         mLastFullChargePref = (PowerGaugePreference) findPreference(
                 KEY_TIME_SINCE_LAST_FULL_CHARGE);
         mBatteryUtils = BatteryUtils.getInstance(getContext());
+        mBatteryTemp = (PowerGaugePreference) findPreference(KEY_BATTERY_TEMP);
 
         if (Utils.isBatteryPresent(getContext())) {
             restartBatteryInfoLoader();
@@ -269,6 +272,16 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
                         .setTitleRes(R.string.advanced_battery_title)
                         .launch();
             return true;
+        } else if (KEY_BATTERY_TEMP.equals(preference.getKey())) {
+            if (batteryTemp) {
+                mBatteryTemp.setSubtitle(
+                    com.android.internal.util.nitrogen.NitrogenUtils.batteryTemperature(getContext(), false));
+                batteryTemp = false;
+            } else {
+                mBatteryTemp.setSubtitle(
+                    com.android.internal.util.nitrogen.NitrogenUtils.batteryTemperature(getContext(), true));
+                batteryTemp = true;
+            }    
         }
         return super.onPreferenceTreeClick(preference);
     }
@@ -346,13 +359,19 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
         } else {
             mNeedUpdateBatteryTip = true;
         }
+
+        mBatDesCap = getResources().getString(R.string.config_batDesCap);
+        mBatCurCap = getResources().getString(R.string.config_batCurCap);
+
         // reload BatteryInfo and updateUI
         restartBatteryInfoLoader();
         updateLastFullChargePreference();
         mScreenUsagePref.setSubtitle(StringUtil.formatElapsedTime(getContext(),
                 mBatteryUtils.calculateScreenUsageTime(mStatsHelper), false));
-        mCurrentBatteryCapacity.setSubtitle(parseBatterymAhText(FILENAME_BATTERY_CURRENT_CAPACITY));
-        mDesignedBatteryCapacity.setSubtitle(parseBatterymAhText(FILENAME_BATTERY_DESIGN_CAPACITY));
+        mCurrentBatteryCapacity.setSubtitle(parseBatterymAhText(mBatCurCap));
+        mDesignedBatteryCapacity.setSubtitle(parseBatterymAhText(mBatDesCap));
+        mBatteryTemp.setSubtitle(
+                com.android.internal.util.nitrogen.NitrogenUtils.batteryTemperature(getContext(), batteryTemp));
     }
 
     @VisibleForTesting
